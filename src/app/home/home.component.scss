@@ -1,0 +1,21 @@
+.imgStyle{
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    min-height: 100%;
+    text-align: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: rgba(255,255,255,0.6);
+    background-blend-mode: lighten;
+}
+.text-block {
+    position: absolute;
+    color: white;
+    margin-top: 20%;
+    margin-left: 5%;
+  }
+h1{
+    font-weight: bold
+}

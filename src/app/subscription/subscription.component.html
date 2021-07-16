@@ -1,0 +1,160 @@
+<h2 align="center"> Subscription Order Process for a Cloud Storage </h2>
+<div class="container" style="width:100%">
+    <mat-horizontal-stepper [linear]="isLinear" #stepper labelPosition="bottom">
+        <!-- first step -->
+        <mat-step [stepControl]="firstStep" label="Select subscription parameters">
+            <mat-card>
+                <div class="padding_3">
+                    <form [formGroup]="firstStep">
+                        <mat-form-field class="paddingSpace">
+                            <mat-label>Duration</mat-label>
+                            <mat-select #singleSelect formControlName="duration" placeholder="Sélectionner">
+                                <mat-option *ngFor="let duration of durationList" (click)="selectedDurationQuantity()"
+                                    [value]="duration">{{ duration.libelle
+                                    +" Months"
+                                    }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="firstStep.controls['duration'].hasError('required')">
+                                Duration is required!
+                            </mat-error>
+                        </mat-form-field>
+                        <br />
+                        <mat-form-field class="paddingSpace">
+                            <mat-label>Amount of gigabytes in a cloud</mat-label>
+                            <mat-select #singleSelect formControlName="quantity" placeholder="Sélectionner">
+                                <mat-option *ngFor="let quantity of quantityList" [value]="quantity"
+                                    (click)="selectedDurationQuantity()">{{ quantity.libelle
+                                    }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="firstStep.controls['quantity'].hasError('required')">
+                                Amount GB is required!
+                            </mat-error>
+                        </mat-form-field>
+                        <br />
+                        <div class="paddingSpace">
+                            <label>Upfront payment </label>&nbsp;
+                            <mat-radio-group formControlName="upfront" (change)="selectedDurationQuantity()">
+                                <mat-radio-button [value]=true>Yes</mat-radio-button>&nbsp;
+                                <mat-radio-button [value]=false>No</mat-radio-button>
+                            </mat-radio-group>
+                            <mat-error *ngIf="firstStep.controls['upfront'].hasError('required')">
+                                Upfront payment is required!
+                            </mat-error>
+                        </div>
+                        <br />
+                        <div class="paddingSpace">
+                            <button mat-raised-button color="primary" matStepperNext>Next</button>
+                        </div>
+                    </form>
+                </div>
+            </mat-card>
+        </mat-step>
+        <!-- second step -->
+        <mat-step [stepControl]="secondStep" label="Payment data">
+            <mat-card>
+                <div class="padding_3">
+                    <form [formGroup]="secondStep">
+                        <mat-form-field class="paddingSpace">
+                            <mat-label>Credit card number</mat-label>
+                            <input matInput placeholder="Credit card number" required formControlName="cardNumber">
+                            <mat-error *ngIf="secondStep.controls['cardNumber'].hasError('required')">
+                                Credit card number is required!
+                            </mat-error>
+                            <mat-error *ngIf="secondStep.controls['cardNumber'].hasError('pattern')">
+                                Credit card number is not Valid!
+                            </mat-error>
+                            <mat-error *ngIf="secondStep.controls['cardNumber'].hasError('minlength')">
+                                Minimum 14 characters required!
+                            </mat-error>
+                        </mat-form-field>
+                        <br />
+                        <mat-form-field class="paddingSpace">
+                            <mat-label>Credit card expiration date</mat-label>
+                            <input matInput required [min]="minDateValidators" [matDatepicker]="picker"
+                                placeholder="DD/MM/YYYY" formControlName="dateExpired">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                            <mat-error *ngIf="secondStep.controls['dateExpired'].hasError('required')">
+                                Credit card expiration date is required!
+                            </mat-error>
+                        </mat-form-field>
+                        <br />
+                        <mat-form-field class="paddingSpace">
+                            <mat-label>Credit card security code</mat-label>
+                            <input type="password" matInput placeholder="Credit card security code" required
+                                formControlName="codeSecurity">
+                            <mat-error *ngIf="secondStep.controls['codeSecurity'].hasError('required')">
+                                Credit card security code is required!
+                            </mat-error>
+                            <mat-error *ngIf="secondStep.controls['codeSecurity'].hasError('minlength')">
+                                Minimum 3 characters required!
+                            </mat-error>
+                        </mat-form-field>
+                        <br />
+                        <div class="paddingSpace">
+                            <button mat-raised-button matStepperPrevious>Back</button> &nbsp; &nbsp;
+                            <button mat-raised-button color="primary" matStepperNext>Next</button>
+                        </div>
+                    </form>
+                </div>
+            </mat-card>
+        </mat-step>
+        <!-- third step -->
+        <mat-step [stepControl]="thirdStep" label="Confirmation">
+            <mat-card>
+                <div class="padding_3">
+                    <form [formGroup]="thirdStep">
+                        <mat-label class="fontText">Duration: <span class="spanFont">{{duration}} Months</span>
+                        </mat-label><br />
+                        <mat-label class="fontText">Amount of GB: <span class="spanFont">{{quantityPerGB}}</span>
+                        </mat-label><br />
+                        <mat-label class="fontText">Price Per GB: <span class="spanFont">$
+                                {{getsubPrice.price_usd_per_gb}}</span>
+                        </mat-label><br />
+                        <mat-label class="fontText">Total Price: <span class="spanFont">$ {{totalPrice}}</span>
+                        </mat-label>
+                        <br />
+                        <mat-form-field class="paddingSpace">
+                            <input type="text" matInput placeholder="Email" required formControlName="emailID">
+                            <mat-error *ngIf="thirdStep.controls['emailID'].hasError('required')">
+                                Email is required!
+                            </mat-error>
+                            <mat-error *ngIf="thirdStep.controls['emailID'].hasError('email')">
+                                Email is not Valid!
+                            </mat-error>
+                        </mat-form-field>
+                        <br />
+                        <mat-checkbox required class="paddingSpace" formControlName="termCondition">
+                            Check here to indicate that you have read and agree to the terms of the subscription order
+                            process
+                            for a cloud storage.
+                        </mat-checkbox>
+                        <div class="paddingSpace">
+                            <button mat-raised-button matStepperPrevious>Back</button> &nbsp; &nbsp;
+                            <button mat-raised-button color="primary" type="submit" (click)="saveInformation(content)"
+                                [disabled]="firstStep.invalid||secondStep.invalid||thirdStep.invalid">Save</button>
+                            &nbsp;
+                            &nbsp;
+                        </div>
+                    </form>
+                </div>
+            </mat-card>
+        </mat-step>
+    </mat-horizontal-stepper>
+    <div class="paddingSpace">
+        <h4>You are curently paying a total of ${{totalPrice}} per {{duration}} month for {{quantityPerGB}}
+            GB.</h4>
+    </div>
+</div>
+<!-- open modal template ref -->
+<ng-template #content>
+    <h1 mat-dialog-title>Save!</h1>
+    <mat-dialog-content>
+        <p> Your subscription is successfully registered. </p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button color="primary" (click)="resetForm()">Dismiss</button>
+    </mat-dialog-actions>
+</ng-template>
